@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     handler(new DbHandler(this)),
     undosStack(new QUndoStack(this)),
     scene(new GraphicsScene(this)),
+    //    infoDialog(new PrjInfoDialog(this)),
     actionGroup(new QActionGroup(this)),
     editActionGroup(new QActionGroup(this))
 {
@@ -20,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete handler;
+    delete scene;
+    //    delete infoDialog;
 }
 
 // create action group
@@ -94,6 +98,7 @@ void MainWindow::on_actionOpen_triggered()
     DbHandler::PrjInfo prjInfo = handler->getPrjInfo();
     ui->imageWidget->updatePrjInfo(prjInfo);
     ui->actionClose->setEnabled(true);
+    //    infoDialog->updatePrjInfo(prjInfo);
 }
 
 void MainWindow::on_actionClose_triggered()
@@ -101,6 +106,7 @@ void MainWindow::on_actionClose_triggered()
     emit clearScene();
     ui->imageWidget->clear();
     ui->actionClose->setEnabled(false);
+    //    infoDialog->clearPrjInfo();
 
     if (handler->isOpened())
         handler->closeDatabase();
@@ -121,6 +127,80 @@ void MainWindow::on_actionSave_triggered()
     }
 }
 
+
+void MainWindow::on_actionExportForm_triggered()
+{
+    my_word.createNewWord();
+
+
+
+
+
+    my_word.save();
+}
+
+void MainWindow::on_actionExportExcel_triggered()
+{
+    QString xlsFile = "/";
+    bool isExcelOpen = my_excel.Open(xlsFile, 1, true);
+
+    QVector<DefectWidget::ItemData>           itemsData;
+
+    quint16                             currIndex;
+    quint16                          maxIndex;
+    quint16                            number;
+    quint16                                 i;
+    int                                  item;
+    QExcel                             qexcel;
+
+    if ( isExcelOpen )
+    {
+        qDebug("open success\n");
+        //初始化表头和显示数据
+        my_excel.setCellString(1,1,"当前所有数据的Excel报表");
+        my_excel.mergeCells(1,1,4,4);
+
+        my_excel.setCellString(5, 1, "页数");
+        my_excel.setCellString(5, 2, "uuid");
+        my_excel.setCellString(5, 3, "类型");
+        my_excel.setCellString(5, 4, "数据");
+
+        maxIndex = ui->imageWidget->getMaxIndex();
+        number = 1;
+        currIndex  = 0;
+        while( currIndex < maxIndex )
+        {
+            itemsData = handler->getIndexData(currIndex).items;
+            qDebug() << "itemsData.count:" << itemsData.count();
+
+            QString indexStr;
+            for (item = 0, i = 0; item < itemsData.count(); item++,i++ )
+            {
+                qDebug() << "index:" << index;
+
+                my_excel.setCellString(5+number+i, 1, indexStr.setNum(index));
+                my_excel.setCellString(5+number+i, 2, itemsData.at(item).uuid.toString());
+                my_excel.setCellString(5+number+i, 3, indexStr.setNum(itemsData.at(item).item->type()));
+                my_excel.setCellString(5+number+i, 4, qexcel.GetExcelData(itemsData.at(item).item));
+            }
+            number += i;
+            index++;
+        }
+    }
+    else
+    {
+        qDebug("open failed\n");
+    }
+    my_excel.Save();
+}
+
+
+void MainWindow::on_actionProjectInfo_triggered()
+{
+    //    infoDialog->exec();
+}
+
+
 void MainWindow::switchImage(quint16 index)
 {
     if (ui->defectWidget->hasAddedItem())
@@ -129,7 +209,7 @@ void MainWindow::switchImage(quint16 index)
         button = QMessageBox::question(this, tr("Unsave items"), tr("You have unsaved items, switching index will discard theses changes!"), QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Cancel);
         if (button == QMessageBox::Cancel)
         {
-
+            ui->imageWidget->cancelSwitch();
             return;
         }
 
@@ -204,3 +284,6 @@ void MainWindow::handleModeChanged(GraphicsScene::Mode curMode)
         resetActions();
     }
 }
+
+
+

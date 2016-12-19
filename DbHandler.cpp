@@ -22,6 +22,7 @@ bool DbHandler::openDatabase(QString filepath)
         return false;
     database = QSqlDatabase::addDatabase("QSQLITE", "DB");
     database.setDatabaseName(filepath);
+
     if (!database.open())
     {
         qDebug() << database.lastError();
@@ -42,6 +43,7 @@ bool DbHandler::openDatabase(QString filepath)
     if (!query.exec("select * from bigImages") || !query.first())
     {
         qDebug() << query.lastError().text();
+
         errorCode = NoBigImages;
         return false;
     }
@@ -76,12 +78,12 @@ DbHandler::PrjInfo DbHandler::getPrjInfo()
 
     query.exec("select * from ProjectInfo");
     query.first();
-    prjInfo.startHeight = query.value(1).toInt();
+    prjInfo.startHeight = (qreal)query.value(1).toInt() / 10000;
 
 
     query.exec("select * from bigImages");
     query.last();
-    prjInfo.endHeight = query.value(0).toInt();
+    prjInfo.endHeight = (qreal)query.value(0).toInt() / 10000;
 
     return prjInfo;
 }

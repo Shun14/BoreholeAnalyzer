@@ -4,7 +4,7 @@
 #include <QAxObject>
 
 #include <QFile>
-
+#include <DbHandler.h>
 class QExcel : public QObject
 {
     Q_OBJECT
@@ -29,6 +29,8 @@ public:
     bool IsOpen();
     bool IsValid();
 
+
+    QString GetExcelData(QGraphicsItem *item);
 protected:
     void Clear();
 
@@ -39,7 +41,9 @@ private:
     QAxObject *pWorksheet;  //指向工作簿中的某个sheet表单
 
     QString   sXlsFile;     //xls文件路径
-    quint32      nCurrSheet;   //当前打开的第几个sheet
+    quint32   nCurrSheet;   //当前打开的第几个sheet
+
+
     bool      bIsVisible;   //excel是否可见
     int       nRowCount;    //行数
     int       nColumnCount; //列数

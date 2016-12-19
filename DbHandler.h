@@ -35,8 +35,8 @@ public:
 
     typedef struct PrjInfo{
         bool isUp2Down;
-        quint32 startHeight;
-        quint32 endHeight;
+        qreal startHeight;
+        qreal endHeight;
         quint32 diameter;
         QString projectName;
         QDateTime projectTime;

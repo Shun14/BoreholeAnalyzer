@@ -11,8 +11,11 @@
 #include <QMessageBox>
 
 #include "GraphicsScene.h"
-
 #include "DbHandler.h"
+#include "qword.h"
+#include "qexcel.h"
+
+//#include "PrjInfoDialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,12 +50,21 @@ private slots:
     void on_actionTextbox_triggered();
     void on_actionCross_triggered();
 
+    void on_actionExportForm_triggered();
+
+    void on_actionExportExcel_triggered();
+    void on_actionProjectInfo_triggered();
+
 private:
     Ui::MainWindow *ui;
     DbHandler *handler;
     QUndoStack *undosStack;
     GraphicsScene *scene;
 
+//    PrjInfoDialog *infoDialog;
+
+    QWord my_word;
+    QExcel my_excel;
     QActionGroup *actionGroup;
     QActionGroup *editActionGroup;
 
